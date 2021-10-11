@@ -6,7 +6,7 @@ USER nobody
 WORKDIR app
 
 # expose server and debug port
-EXPOSE 8080 5858
+EXPOSE 5858 8080
 
 # run application
 CMD ["node", "dist/src/index.js"]

@@ -1,12 +1,9 @@
 import * as jwt from 'jsonwebtoken'
-import { User } from '../../entities'
 import { UnauthorizedError } from '../../errors'
-import { UserRepository } from '../../repositories'
 
 export interface AuthUser {
   id: number
   email: string
-  role: Role
 }
 
 export enum Role {
@@ -16,36 +13,32 @@ export enum Role {
 
 export interface Authenticator {
   validate(token: string): Promise<AuthUser>
-  authenticate(user: User): string
+  authenticate(user: AuthUser): string
 }
 
 export class JWTAuthenticator implements Authenticator {
-  private userRepo: UserRepository
   private secret: string
 
-  constructor(userRepo: UserRepository) {
-    this.userRepo = userRepo
+  constructor() {
     this.secret = process.env.SECRET_KEY || 'secret'
   }
 
   public async validate(token: string): Promise<AuthUser> {
     try {
       const decode: any = jwt.verify(token, this.secret)
-      const user = await this.userRepo.findByEmail(decode.email)
 
       return {
-        id: user.id,
-        email: user.email,
-        role: user.role as Role
+        id: 0,
+        email: decode.email
       }
     } catch (err) {
       throw new UnauthorizedError(err)
     }
   }
 
-  public authenticate(user: User): string {
+  public authenticate(user: AuthUser): string {
     return jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, email: user.email },
       this.secret,
       {
         expiresIn: 60 * 60

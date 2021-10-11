@@ -7,8 +7,6 @@ import { ServiceContainer } from '../container'
 import { AppError } from '../errors'
 import * as health from './health'
 import * as middlewares from './middlewares'
-import * as task from './tasks'
-import * as user from './users'
 import * as socketio from './socketio'
 
 export class AppServer {
@@ -90,8 +88,6 @@ export function createServer(container: ServiceContainer): AppServer {
 
   // Register routes
   health.init(app, container)
-  user.init(app, container)
-  task.init(app, container)
   socketio.init(app);
 
   return appSrv
