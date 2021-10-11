@@ -1,5 +1,3 @@
-# typescript-node [![Build Status](https://travis-ci.org/Talento90/typescript-node.svg?branch=master)](https://travis-ci.org/Talento90/typescript-node) [![codecov](https://codecov.io/gh/Talento90/typescript-node/branch/master/graph/badge.svg)](https://codecov.io/gh/Talento90/typescript-node) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7e1b73f83bf7485c9d75e8ea9f853d36)](https://www.codacy.com/app/Talento90/typescript-node?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Talento90/typescript-node&amp;utm_campaign=Badge_Grade)
-
 
 Template for building nodejs and typescript services. The main goal of this boilerplate is to offer a good Developer Experience (eg: debugging, watch and recompile) by providing the following features out of the box:
 
@@ -9,7 +7,6 @@ Template for building nodejs and typescript services. The main goal of this boil
 * REST API - [koa2](http://koajs.com/)
 * Graceful Shutdown - [Pattern](https://nemethgergely.com/nodejs-healthcheck-graceful-shutdown/)
 * HealthCheck - [Pattern /health](http://microservices.io/patterns/observability/health-check-api.html)
-* SQL Database & Migrations - [knex](http://knexjs.org/)
 * Authentication and Authorization - [JWT](https://github.com/auth0/node-jsonwebtoken)
 * Validation - [Joi](https://github.com/hapijs/joi)
 * Testing - [Mocha](https://mochajs.org/) [Chai](http://www.chaijs.com/) + [Sinon](http://sinonjs.org/) [Coverage](https://istanbul.js.org/)
@@ -36,3 +33,12 @@ Template for building nodejs and typescript services. The main goal of this boil
 * *npm run test* - Run unit tests
 * *npm run test:integration* - Run integration tests
 * *npm run test:all* - Run Unit and Integration tests
+
+## JWT TOKEN on client
+
+```
+const {token} = sessionStorage;
+const socket = io.connect('http://localhost:3000', {
+  query: {token}
+});
+```

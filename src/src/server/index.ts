@@ -21,6 +21,21 @@ export class AppServer {
   public listen(port: number): Server {
     this.server = this.app.listen(port)
     this.io = new socketIo.Server(this.server);
+    this.io.use((socket, next) => {
+      if (socket.handshake.query && socket.handshake.query.token){
+        // jwt.verify(socket.handshake.query.token, 'SECRET_KEY', function(err, decoded) {
+        //   if (err) return next(new Error('Authentication error'));
+        //   socket.decoded = decoded;
+        //   next();
+        // });
+        console.log('token');
+        next();
+      }
+      else {
+        console.log('no token');
+        next(new Error('Authentication error'));
+      }    
+    });
     this.io.on('connection', (socket: any) => {
       console.log('a user connected');
 
