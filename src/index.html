@@ -62,16 +62,37 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
         $(function () {
-            var socket = io();
+            var socket = io({ transports: ['websocket'], query: { token: 'tokennnn' } });
 
-            $('form').submit(function () {
-                socket.emit('chat message', $('#m').val());
-                $('#m').val('');
-                return false;
-            });
+            socket.on('connect', function () {
+                console.log('conectado');
 
-            socket.on('chat message', function (msg) {
-                $('#messages').append($('<li>').text(msg));
+                socket.on('new_user', function (msg) {
+                    console.log(msg);
+                    $('#messages').append($('<li>').text(msg));
+                });
+                socket.on('chat_message', function (msg) {
+                    console.log(msg);
+                    $('#messages').append($('<li>').text(msg));
+                });
+                socket.on('reconnect', function () {
+                    $('#lines').remove();
+                    message('System', 'Reconnected to the server');
+                });
+                
+                socket.on('reconnecting', function () {
+                    message('System', 'Attempting to re-connect to the server');
+                });
+                
+                socket.on('error', function (e) {
+                    message('System', e ? e : 'A unknown error occurred');
+                });
+
+                $('form').submit(function () {
+                    socket.emit('chat_message', $('#m').val());
+                    $('#m').val('');
+                    return false;
+                });
             });
         });
     </script>

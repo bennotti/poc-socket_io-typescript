@@ -28,7 +28,7 @@ export class AppServer {
         //   socket.decoded = decoded;
         //   next();
         // });
-        console.log('token');
+        console.log(socket.handshake.query.token);
         next();
       }
       else {
@@ -38,9 +38,12 @@ export class AppServer {
     });
     this.io.on('connection', (socket: any) => {
       console.log('a user connected');
-
-      socket.on('chat message', function (msg) {
+      
+      this.io.emit('new_user', 'New User Joined, Say Hi :D');
+      const self = this;
+      socket.on('chat_message', function (msg) {
           console.log('message: ' + msg);
+          self.io.emit('chat_message', msg);
       });
 
       socket.on('disconnect', () => {
