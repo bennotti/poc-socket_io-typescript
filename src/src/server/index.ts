@@ -13,6 +13,7 @@ export class AppServer {
   private app: Koa
   private server: Server
   private io: socketIo.Server
+  private workspace: socketIo.Namespace;
 
   constructor(app: Koa) {
     this.app = app
@@ -21,7 +22,8 @@ export class AppServer {
   public listen(port: number): Server {
     this.server = this.app.listen(port)
     this.io = new socketIo.Server(this.server);
-    this.io.use((socket, next) => {
+    this.workspace = this.io.of('/my-namespace');
+    this.workspace.use((socket, next) => {
       if (socket.handshake.query && socket.handshake.query.token){
         // jwt.verify(socket.handshake.query.token, 'SECRET_KEY', function(err, decoded) {
         //   if (err) return next(new Error('Authentication error'));
@@ -36,14 +38,13 @@ export class AppServer {
         next(new Error('Authentication error'));
       }    
     });
-    this.io.on('connection', (socket: any) => {
+    this.workspace.on('connection', (socket: any) => {
       console.log('a user connected');
       
-      this.io.emit('new_user', 'New User Joined, Say Hi :D');
-      const self = this;
-      socket.on('chat_message', function (msg) {
+      this.workspace.emit('new_user', 'New User Joined, Say Hi :D');
+      socket.on('chat_message', (msg) => {
           console.log('message: ' + msg);
-          self.io.emit('chat_message', msg);
+          this.workspace.emit('chat_message', msg);
       });
 
       socket.on('disconnect', () => {
