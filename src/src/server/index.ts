@@ -1,5 +1,4 @@
 import { ErrorCallback, retry } from 'async'
-import * as socketIo from 'socket.io';
 import { Server } from 'http'
 import * as Koa from 'koa'
 import * as helmet from 'koa-helmet'
@@ -7,51 +6,25 @@ import { ServiceContainer } from '../container'
 import { AppError } from '../errors'
 import * as health from './health'
 import * as middlewares from './middlewares'
-import * as socketio from './socketio'
+import * as socketIoClient from './socketio-client'
+import { SocketIoServer } from './socketio-workspaces'
 
 export class AppServer {
   private app: Koa
   private server: Server
-  private io: socketIo.Server
-  private workspace: socketIo.Namespace;
+  private socketIoServer: SocketIoServer
 
   constructor(app: Koa) {
-    this.app = app
+    this.app = app;
+    this.socketIoServer = new SocketIoServer();
   }
 
   public listen(port: number): Server {
-    this.server = this.app.listen(port)
-    this.io = new socketIo.Server(this.server);
-    this.workspace = this.io.of('/my-namespace');
-    this.workspace.use((socket, next) => {
-      if (socket.handshake.query && socket.handshake.query.token){
-        // jwt.verify(socket.handshake.query.token, 'SECRET_KEY', function(err, decoded) {
-        //   if (err) return next(new Error('Authentication error'));
-        //   socket.decoded = decoded;
-        //   next();
-        // });
-        console.log(socket.handshake.query.token);
-        next();
-      }
-      else {
-        console.log('no token');
-        next(new Error('Authentication error'));
-      }    
-    });
-    this.workspace.on('connection', (socket: any) => {
-      console.log('a user connected');
-      
-      this.workspace.emit('new_user', 'New User Joined, Say Hi :D');
-      socket.on('chat_message', (msg) => {
-          console.log('message: ' + msg);
-          this.workspace.emit('chat_message', msg);
-      });
+    this.server = this.app.listen(port);
 
-      socket.on('disconnect', () => {
-          console.log('user disconnected');
-      });
-    });
-    return this.server
+    this.socketIoServer.listen(this.server);
+
+    return this.server;
   }
 
   public getServer(): Server {
@@ -107,7 +80,7 @@ export function createServer(container: ServiceContainer): AppServer {
 
   // Register routes
   health.init(app, container)
-  socketio.init(app);
+  socketIoClient.init(app);
 
   return appSrv
 }

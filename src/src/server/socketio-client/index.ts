@@ -1,10 +1,10 @@
 import * as Koa from 'koa'
 import * as Router from 'koa-router'
-import { SocketIoController } from './controller'
+import { SocketIoClientController } from './controller'
 
 export function init(server: Koa) {
-  const router = new Router({ prefix: '/socketio-teste' })
-  const controller = new SocketIoController()
+  const router = new Router({ prefix: '/socketio-client' })
+  const controller = new SocketIoClientController()
 
   router.get(
     '/',
