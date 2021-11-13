@@ -14,7 +14,7 @@
 
 ### run linux/mac
 
-sh .devox\run.sh
+sh .devops\run.sh
 
 ## STOP
 
@@ -24,4 +24,4 @@ sh .devox\run.sh
 
 ### run linux/mac
 
-sh .devox\run.sh
+sh .devops\run.sh
